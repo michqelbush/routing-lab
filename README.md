@@ -1,8 +1,6 @@
-&nbsp;
-
 # Routing Lab
 
-I built a 4 router, two side network on my Proxmox homelab. I wanted to learn routing, and hands on I feel works the best. Each site runs OSPF internally, the 2 sites connect over redundant eBGP links, which gives it 2 links incase one fails, and I wrote Python scripts that build each routers config from a single invintory file and checks that the whole network came up healthy.
+I built a 4 router, two site network on my Proxmox homelab. I wanted to learn routing, and hands on I feel works the best. Each site runs OSPF internally, the 2 sites connect over redundant eBGP links, which gives it 2 links incase one fails, and I wrote Python scripts that build each routers config from a single inventory file and check that the whole network came up healthy.
 
 ## Why?
 
@@ -30,7 +28,7 @@ Routers in the same site also run iBGP between their loopbacks, so each site kno
    * Routing Software for OSPF and BGP
 - Python w/ Jinja2 templates
      * For config generation and verification
-- Runs in an Unbuntu VM on Proxmox homelab
+- Runs in an Ubuntu VM on Proxmox homelab
 
 
 ## How it works
@@ -41,7 +39,7 @@ Routers in the same site also run iBGP between their loopbacks, so each site kno
 
 `verify.py` works out which each router should be talking to from the inventory. Then it asks every router who its actually talking to, to compare, and then prints a PASS/FAIL per session. If anything is down, it exits with code 1. 
 
-`deploy.sh` runs all three of them. It generates, then redepolys, and then verifys. 
+`deploy.sh` runs all three of them. It generates, then redeploys, and then verifys. 
 
 ```
 ./deploy.sh
@@ -63,7 +61,7 @@ The route switched in a few seconds and ping from r1's loopback to r4's loopback
 
 ## Things I learned
 
-1. `next-hop-self` is the thing that makes the backup path work. Without it, r2 would be told to send traffic to r3's link address, which it has no route to do.
+1. `next-hop-self` is the thing that makes the backup path work. Without it, r2 would be told to send traffic to r3's link address, which it has no route to.
 2.  Pinging from a link address fails but pinging from a loopback works, only loopbacks are advertised between sites.
 3.  Failover was fast because FRR saw the interface go down. Something like a dead device mid cable, it couldnt see and could take up to the 180s from the BGP hold timer.
 
@@ -75,4 +73,3 @@ The route switched in a few seconds and ping from r1's loopback to r4's loopback
 * BFD which is Bidirectional Forwarding Detection for super fast failure detection.
 
  &nbsp;
- 
