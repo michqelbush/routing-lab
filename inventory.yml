@@ -1,0 +1,33 @@
+# Every routers settings are here, generate.py turns this file into configs/<router>.conf.
+# Routers with the same asn are seen as one site, they get iBGP sessions to each other
+# and advertise each other's loopbacks so adding a router here updates the whole site.
+
+routers:
+  r1:
+    asn: 65001
+    loopback: 10.0.0.1
+    ospf_links:
+      - {interface: eth1, address: 10.1.12.1/30}
+    ebgp_links:
+      - {interface: eth2, address: 172.16.13.1/30, peer: 172.16.13.2, peer_asn: 65002}
+  r2:
+    asn: 65001
+    loopback: 10.0.0.2
+    ospf_links:
+      - {interface: eth1, address: 10.1.12.2/30}
+    ebgp_links:
+      - {interface: eth2, address: 172.16.24.1/30, peer: 172.16.24.2, peer_asn: 65002}
+  r3:
+    asn: 65002
+    loopback: 10.0.0.3
+    ospf_links:
+      - {interface: eth1, address: 10.2.34.1/30}
+    ebgp_links:
+      - {interface: eth2, address: 172.16.13.2/30, peer: 172.16.13.1, peer_asn: 65001}
+  r4:
+    asn: 65002
+    loopback: 10.0.0.4
+    ospf_links:
+      - {interface: eth1, address: 10.2.34.2/30}
+    ebgp_links:
+      - {interface: eth2, address: 172.16.24.2/30, peer: 172.16.24.1, peer_asn: 65001}

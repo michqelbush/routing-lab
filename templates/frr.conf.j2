@@ -1,0 +1,41 @@
+frr defaults traditional
+!
+interface lo
+ ip address {{ loopback }}/32
+ ip ospf area 0
+!
+{% for link in ospf_links %}
+interface {{ link.interface }}
+ ip address {{ link.address }}
+ ip ospf area 0
+ ip ospf network point-to-point
+!
+{% endfor %}
+{% for link in ebgp_links %}
+interface {{ link.interface }}
+ ip address {{ link.address }}
+!
+{% endfor %}
+router ospf
+ ospf router-id {{ loopback }}
+!
+router bgp {{ asn }}
+ bgp router-id {{ loopback }}
+ no bgp ebgp-requires-policy
+{% for link in ebgp_links %}
+ neighbor {{ link.peer }} remote-as {{ link.peer_asn }}
+{% endfor %}
+{% for peer in ibgp_peers %}
+ neighbor {{ peer }} remote-as {{ asn }}
+ neighbor {{ peer }} update-source lo
+{% endfor %}
+ !
+ address-family ipv4 unicast
+{% for prefix in advertise %}
+  network {{ prefix }}
+{% endfor %}
+{% for peer in ibgp_peers %}
+  neighbor {{ peer }} next-hop-self
+{% endfor %}
+ exit-address-family
+!
